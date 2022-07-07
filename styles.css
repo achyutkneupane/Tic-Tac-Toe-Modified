@@ -18,8 +18,8 @@ body {
 }
 
 #canvas {
-    padding: 30px;
+    /* padding: 30px; */
     width: 100%;
     height: 100%;
-    /* border: 5px solid #0000ff; */
+    border: 5px solid #0000ff;
 }
