@@ -57,6 +57,7 @@ if (canvas.getContext) {
   canvas.addEventListener("click", (evt) => {
         playGame(evt,ctx);
   });
+  changeText();
 }
 // }
 
@@ -219,6 +220,7 @@ function playGame(evt,ctx) {
         }
         refreshScreen(ctx);
     }
+    changeText();
 }
 
 function refreshScreen(ctx) {
@@ -232,4 +234,8 @@ function refreshScreen(ctx) {
         drawCross(ctx, coordinates[cross]);
     }
     );
+}
+
+function changeText() {
+    document.getElementById("current").innerHTML = current == 0 ? "O's turn" : "X's turn";
 }
