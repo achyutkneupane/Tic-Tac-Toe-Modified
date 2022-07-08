@@ -45,7 +45,7 @@ const movables = {
   2: [1, 3, 5],
   3: [2, 5, 6],
   4: [1, 5, 7],
-  5: [1, 2, 3, 4, 6, 7, 8],
+  5: [1, 2, 3, 4, 6, 7, 8, 9],
   6: [3, 5, 9],
   7: [4, 5, 8],
   8: [5, 7, 9],
@@ -63,7 +63,7 @@ const winningCases = [
   [3, 6, 9],
 ];
 
-// var gameRunning = false;
+var gameRunning = false;
 
 var crosses = [];
 var circles = [];
@@ -71,19 +71,19 @@ var current = "";
 var removedFrom = "";
 var winner = "";
 
-// if (!gameRunning) {
-
 if (canvas.getContext) {
   const ctx = canvas.getContext("2d");
-  current = 0; // 0 -> circle, 1 -> cross
+  if (!gameRunning) {
+    current = 0; // 0 -> circle, 1 -> cross
 
-  drawStructure(ctx);
+    drawStructure(ctx);
+    gameRunning = true;
+  }
+  changeText();
   canvas.addEventListener("click", (evt) => {
     playGame(evt, ctx);
   });
-  changeText();
 }
-// }
 
 function drawStructure(ctx) {
   ctx.beginPath();
@@ -220,11 +220,11 @@ function playGame(evt, ctx) {
         return;
       }
     }
-    console.log(
-      current == 0
-        ? "circle added to " + mousePos
-        : "cross added to " + mousePos
-    );
+    // console.log(
+    //   current == 0
+    //     ? "circle added to " + mousePos
+    //     : "cross added to " + mousePos
+    // );
     if (circles.includes(mousePos) || crosses.includes(mousePos)) {
       return;
     }
@@ -237,13 +237,13 @@ function playGame(evt, ctx) {
     removedFrom = mousePos;
     if (current == 0) {
       if (circles.includes(removedFrom)) {
-        console.log("circle removed from " + removedFrom);
+        // console.log("circle removed from " + removedFrom);
         circles.splice(circles.indexOf(removedFrom), 1);
       }
     }
     if (current == 1) {
       if (crosses.includes(removedFrom)) {
-        console.log("cross removed from " + removedFrom);
+        // console.log("cross removed from " + removedFrom);
         crosses.splice(crosses.indexOf(removedFrom), 1);
       }
     }
@@ -254,9 +254,9 @@ function playGame(evt, ctx) {
 }
 
 function drawPoint() {
-  console.log(
-    current == 0 ? "circle added to " + mousePos : "cross added to " + mousePos
-  );
+  // console.log(
+  //   current == 0 ? "circle added to " + mousePos : "cross added to " + mousePos
+  // );
   if (circles.includes(mousePos) || crosses.includes(mousePos)) {
     return;
   }
@@ -295,7 +295,10 @@ function checkWinner() {
       )
     )
   ) {
-    document.getElementById("current").innerHTML = "Cross Won"
+    document.getElementById("current").innerHTML = "";
+    canvas.style.display = "none"
+    document.getElementById("floatingButton").style.display = "block";
+    document.getElementById("floatingButton").innerHTML = "Cross Won";
   } else if (
     JSON.stringify(winningCases).includes(
       JSON.stringify(
@@ -303,7 +306,10 @@ function checkWinner() {
       )
     )
   ) {
-    document.getElementById("current").innerHTML = "Circle Won"
+    document.getElementById("current").innerHTML = "";
+    canvas.style.display = "none"
+    document.getElementById("floatingButton").style.display = "block";
+    document.getElementById("floatingButton").innerHTML = "Circle Won";
   } else {
     return;
   }

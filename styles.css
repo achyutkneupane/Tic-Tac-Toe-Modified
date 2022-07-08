@@ -31,3 +31,14 @@ body {
     font-size: 40px;
     color: #fff;
 }
+
+#floatingButton {
+    display: none;
+    padding: 20px;
+    background-color: #10161d;
+    color: #fff;
+    font-size: 2rem;
+    position:absolute;
+    border: 2px solid #fff;
+    border-radius: 40px;
+}
