@@ -70,6 +70,7 @@ var circles = [];
 var current = "";
 var removedFrom = "";
 var winner = "";
+var crossTime = circleTime = 60;
 
 if (canvas.getContext) {
   const ctx = canvas.getContext("2d");
@@ -77,13 +78,33 @@ if (canvas.getContext) {
     current = 0; // 0 -> circle, 1 -> cross
 
     drawStructure(ctx);
-    gameRunning = true;
   }
   changeText();
+  updateTime();
   canvas.addEventListener("click", (evt) => {
+    gameRunning = true;
     playGame(evt, ctx);
   });
 }
+
+function updateTime() {
+  document.getElementById("circle-time").innerHTML = new Date(circleTime * 1000).toISOString().slice(14, 19);
+  document.getElementById("cross-time").innerHTML = new Date(crossTime * 1000).toISOString().slice(14, 19);
+}
+
+setInterval(function() {
+  checkWinner();
+  if(circleTime > 0 || crossTime > 0) {
+    if(!gameRunning) return;
+    updateTime();
+    if(current == 0) {
+      circleTime--
+    }
+    else if(current == 1) {
+      crossTime--
+    }
+  }
+},1000);
 
 function drawStructure(ctx) {
   ctx.beginPath();
@@ -293,10 +314,12 @@ function checkWinner() {
       JSON.stringify(
         crosses.map((cross) => parseInt(cross)).sort((a, b) => a - b)
       )
-    )
+    ) || circleTime <= 0
   ) {
     document.getElementById("current").innerHTML = "";
     canvas.style.display = "none"
+    document.getElementById("cross-time-box").style.display = "none";
+    document.getElementById("circle-time-box").style.display = "none";
     document.getElementById("floatingButton").style.display = "block";
     document.getElementById("floatingButton").innerHTML = "Cross Won";
   } else if (
@@ -304,10 +327,12 @@ function checkWinner() {
       JSON.stringify(
         circles.map((circle) => parseInt(circle)).sort((a, b) => a - b)
       )
-    )
+    ) || crossTime <= 0
   ) {
     document.getElementById("current").innerHTML = "";
     canvas.style.display = "none"
+    document.getElementById("cross-time-box").style.display = "none";
+    document.getElementById("circle-time-box").style.display = "none";
     document.getElementById("floatingButton").style.display = "block";
     document.getElementById("floatingButton").innerHTML = "Circle Won";
   } else {
