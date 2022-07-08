@@ -40,11 +40,36 @@ const coordinates = {
   },
 };
 
+const movables = {
+  1: [2, 4, 5],
+  2: [1, 3, 5],
+  3: [2, 5, 6],
+  4: [1, 5, 7],
+  5: [1, 2, 3, 4, 6, 7, 8],
+  6: [3, 5, 9],
+  7: [4, 5, 8],
+  8: [5, 7, 9],
+  9: [6, 8, 5],
+};
+
+const winningCases = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [1, 5, 9],
+  [3, 5, 7],
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9],
+];
+
 // var gameRunning = false;
 
 var crosses = [];
 var circles = [];
 var current = "";
+var removedFrom = "";
+var winner = "";
 
 // if (!gameRunning) {
 
@@ -53,9 +78,8 @@ if (canvas.getContext) {
   current = 0; // 0 -> circle, 1 -> cross
 
   drawStructure(ctx);
-
   canvas.addEventListener("click", (evt) => {
-        playGame(evt,ctx);
+    playGame(evt, ctx);
   });
   changeText();
 }
@@ -161,12 +185,6 @@ function drawCross(ctx, coordinates) {
   ctx.stroke();
 }
 
-// function clicked(ev) {
-//     console.log(ev.pageX, ev.pageY);
-//     // console.log(ev);
-//     ev.preventDefault();
-// }
-
 function clicked(evt) {
   var rect = canvas.getBoundingClientRect(),
     scaleX = canvas.width / rect.width,
@@ -178,7 +196,6 @@ function clicked(evt) {
   return checkCoordinate(coordinate);
 }
 
-// console log each value of coordinates
 function checkCoordinate(coordinate) {
   for (let key in coordinates) {
     if (
@@ -192,50 +209,102 @@ function checkCoordinate(coordinate) {
   }
 }
 
-function playGame(evt,ctx) {
-    const mousePos = clicked(evt);
-    if((crosses.length < 3 && current == 1) || (circles.length < 3 && current == 0)){
-        if(circles.includes(mousePos) || crosses.includes(mousePos)){
-            return;
-        }
-        current === 0
-        ? drawCircle(ctx, coordinates[mousePos])
-        : drawCross(ctx, coordinates[mousePos]);
-      current == 0 ? circles.push(mousePos) : crosses.push(mousePos);
-      current == 0 ? (current = 1) : (current = 0);
-    } else {
-        if(current == 0){
-            if(circles.includes(mousePos)){
-                console.log(mousePos+" removed");
-                circles.splice(circles.indexOf(mousePos),1);
-                drawCircle(ctx, coordinates[mousePos]);
-            }
-        }
-        if(current == 1){
-            if(crosses.includes(mousePos)){
-                console.log(mousePos+" removed");
-                crosses.splice(crosses.indexOf(mousePos),1);
-                drawCross(ctx, coordinates[mousePos]);
-            }
-        }
-        refreshScreen(ctx);
+function playGame(evt, ctx) {
+  const mousePos = clicked(evt);
+  if (
+    (crosses.length < 3 && current == 1) ||
+    (circles.length < 3 && current == 0)
+  ) {
+    if (removedFrom) {
+      if (!allowedToMove(removedFrom, mousePos)) {
+        return;
+      }
     }
-    changeText();
+    console.log(
+      current == 0
+        ? "circle added to " + mousePos
+        : "cross added to " + mousePos
+    );
+    if (circles.includes(mousePos) || crosses.includes(mousePos)) {
+      return;
+    }
+    current === 0
+      ? drawCircle(ctx, coordinates[mousePos])
+      : drawCross(ctx, coordinates[mousePos]);
+    current == 0 ? circles.push(mousePos) : crosses.push(mousePos);
+    current == 0 ? (current = 1) : (current = 0);
+  } else {
+    removedFrom = mousePos;
+    if (current == 0) {
+      if (circles.includes(removedFrom)) {
+        console.log("circle removed from " + removedFrom);
+        circles.splice(circles.indexOf(removedFrom), 1);
+      }
+    }
+    if (current == 1) {
+      if (crosses.includes(removedFrom)) {
+        console.log("cross removed from " + removedFrom);
+        crosses.splice(crosses.indexOf(removedFrom), 1);
+      }
+    }
+    refreshScreen(ctx);
+  }
+  changeText();
+  checkWinner();
+}
+
+function drawPoint() {
+  console.log(
+    current == 0 ? "circle added to " + mousePos : "cross added to " + mousePos
+  );
+  if (circles.includes(mousePos) || crosses.includes(mousePos)) {
+    return;
+  }
+  current === 0
+    ? drawCircle(ctx, coordinates[mousePos])
+    : drawCross(ctx, coordinates[mousePos]);
+  current == 0 ? circles.push(mousePos) : crosses.push(mousePos);
+  current == 0 ? (current = 1) : (current = 0);
 }
 
 function refreshScreen(ctx) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawStructure(ctx);
-    circles.forEach(function(circle) {
-        drawCircle(ctx, coordinates[circle]);
-    }
-    );
-    crosses.forEach(function(cross) {
-        drawCross(ctx, coordinates[cross]);
-    }
-    );
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawStructure(ctx);
+  circles.forEach(function (circle) {
+    drawCircle(ctx, coordinates[circle]);
+  });
+  crosses.forEach(function (cross) {
+    drawCross(ctx, coordinates[cross]);
+  });
 }
 
 function changeText() {
-    document.getElementById("current").innerHTML = current == 0 ? "O's turn" : "X's turn";
+  document.getElementById("current").innerHTML =
+    current == 0 ? "Current: O's turn" : "Current: X's turn";
+}
+
+function allowedToMove(source, destination) {
+  return movables[source].includes(parseInt(destination));
+}
+
+function checkWinner() {
+  if (
+    JSON.stringify(winningCases).includes(
+      JSON.stringify(
+        crosses.map((cross) => parseInt(cross)).sort((a, b) => a - b)
+      )
+    )
+  ) {
+    document.getElementById("current").innerHTML = "Cross Won"
+  } else if (
+    JSON.stringify(winningCases).includes(
+      JSON.stringify(
+        circles.map((circle) => parseInt(circle)).sort((a, b) => a - b)
+      )
+    )
+  ) {
+    document.getElementById("current").innerHTML = "Circle Won"
+  } else {
+    return;
+  }
 }
