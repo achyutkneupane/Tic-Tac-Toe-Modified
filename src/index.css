@@ -1,0 +1,58 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.App {
+    width: 75vh;
+    height: 75vh;
+    /* border: 5px solid #ff0000; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+#canvas {
+    /* padding: 30px; */
+    width: 100%;
+    height: 100%;
+    /* border: 5px solid #0000ff; */
+}
+
+#details {
+    padding: 10px;
+    font-size: 40px;
+    color: #fff;
+}
+
+#floatingButton {
+    display: none;
+    padding: 20px;
+    background-color: #10161d;
+    color: #fff;
+    font-size: 2rem;
+    position:absolute;
+    border: 2px solid #fff;
+    border-radius: 40px;
+}
+
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+#circle-time-box, #cross-time-box {
+    color: #fff;
+    font-size: 2rem;
+    text-align: center;
+    min-width: 200px;
+}
