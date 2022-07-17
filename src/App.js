@@ -16,7 +16,6 @@ export default function App() {
   const [height, setHeight] = useState(0);
   const [coordinates, setCoordinates] = useState({});
   const [ctx, setCtx] = useState(null);
-  const [mousePos, setMousePos] = useState(-1);
 
   const drawStructure = () => {
     ctx?.moveTo(0, 0);
@@ -55,8 +54,8 @@ export default function App() {
   const drawCircle = (coordinate) => {
     ctx?.beginPath();
     ctx?.rect(
-      coordinate.x - margin / 2,
-      coordinate.y - margin / 2,
+      coordinate?.x - margin / 2,
+      coordinate?.y - margin / 2,
       margin,
       margin
     );
@@ -65,8 +64,8 @@ export default function App() {
 
     ctx?.beginPath();
     ctx?.rect(
-      coordinate.x - margin / 2,
-      coordinate.y - margin / 2,
+      coordinate?.x - margin / 2,
+      coordinate?.y - margin / 2,
       margin,
       margin
     );
@@ -75,7 +74,7 @@ export default function App() {
     ctx?.stroke();
 
     ctx?.beginPath();
-    ctx?.arc(coordinate.x, coordinate.y, 25, 0, 2 * Math.PI);
+    ctx?.arc(coordinate?.x, coordinate?.y, 25, 0, 2 * Math.PI);
     ctx.strokeStyle = "#0083f5";
     ctx.lineWidth = 10;
     ctx?.stroke();
@@ -84,8 +83,8 @@ export default function App() {
   const drawCross = (coordinate) => {
     ctx?.beginPath();
     ctx?.rect(
-      coordinate.x - margin / 2,
-      coordinate.y - margin / 2,
+      coordinate?.x - margin / 2,
+      coordinate?.y - margin / 2,
       margin,
       margin
     );
@@ -94,8 +93,8 @@ export default function App() {
 
     ctx?.beginPath();
     ctx?.rect(
-      coordinate.x - margin / 2,
-      coordinate.y - margin / 2,
+      coordinate?.x - margin / 2,
+      coordinate?.y - margin / 2,
       margin,
       margin
     );
@@ -105,20 +104,20 @@ export default function App() {
 
     ctx?.beginPath();
     ctx?.moveTo(
-      coordinate.x - (margin * 1) / 4,
-      coordinate.y - (margin * 1) / 4
+      coordinate?.x - (margin * 1) / 4,
+      coordinate?.y - (margin * 1) / 4
     );
     ctx?.lineTo(
-      coordinate.x + (margin * 1) / 4,
-      coordinate.y + (margin * 1) / 4
+      coordinate?.x + (margin * 1) / 4,
+      coordinate?.y + (margin * 1) / 4
     );
     ctx?.moveTo(
-      coordinate.x + (margin * 1) / 4,
-      coordinate.y - (margin * 1) / 4
+      coordinate?.x + (margin * 1) / 4,
+      coordinate?.y - (margin * 1) / 4
     );
     ctx?.lineTo(
-      coordinate.x - (margin * 1) / 4,
-      coordinate.y + (margin * 1) / 4
+      coordinate?.x - (margin * 1) / 4,
+      coordinate?.y + (margin * 1) / 4
     );
     ctx.strokeStyle = "#39c62f";
     ctx.lineWidth = 10;
@@ -138,7 +137,6 @@ export default function App() {
       x: (evt.clientX - rect.left) * scaleX,
       y: (evt.clientY - rect.top) * scaleY,
     };
-    // console.log(checkCoordinate(coordinate), coordinate);
     return checkCoordinate(coordinate);
   };
 
@@ -160,8 +158,8 @@ export default function App() {
   }
 
   const playGame = (evt) => {
-    setMousePos(clicked(evt));
-    if(!gameRunning) return;
+    var mousePos = clicked(evt);
+    if (!gameRunning) return;
     if (
       (crosses.length < 3 && current === 1) ||
       (circles.length < 3 && current === 0)
@@ -171,33 +169,34 @@ export default function App() {
           return;
         }
       }
-      console.log(
-        current === 0
-          ? "circle added to " + mousePos
-          : "cross added to " + mousePos
-      );
+        console.log(
+          current === 0
+            ? "circle added to " + mousePos
+            : "cross added to " + mousePos
+        );
       if (circles.includes(mousePos) || crosses.includes(mousePos)) {
         return;
       }
       current === 0
         ? drawCircle(coordinates[mousePos])
         : drawCross(coordinates[mousePos]);
-        current === 0 ? setCircles([...circles, mousePos]) : setCrosses([...crosses, mousePos]);
+      current === 0
+        ? setCircles([...circles, mousePos])
+        : setCrosses([...crosses, mousePos]);
       current === 0 ? setCurrent(1) : setCurrent(0);
     } else {
       setRemovedFrom(mousePos);
       if (current === 0) {
         if (circles.includes(removedFrom)) {
-          console.log("circle removed from " + removedFrom);
-        //   remove element from state circles in index of removedFrom
-            setCircles(circles.filter((circle) => circle !== removedFrom));
-
+          //   console.log("circle removed from " + removedFrom);
+          //   remove element from state circles in index of removedFrom
+          setCircles(circles.filter((circle) => circle !== removedFrom));
         }
       }
       if (current === 1) {
         if (crosses.includes(removedFrom)) {
-          console.log("cross removed from " + removedFrom);
-          setCrosses(crosses.filter((cross) => cross !== removedFrom));
+          //   console.log("cross removed from " + removedFrom);
+        //   setCrosses(crosses.filter((cross) => cross !== removedFrom));
         }
       }
       refreshScreen();
@@ -252,17 +251,17 @@ export default function App() {
   };
 
   const updateTime = () => {
-    console.log(new Date(circleTime * 1000).toISOString().slice(14, 19));
-    console.log(new Date(crossTime * 1000).toISOString().slice(14, 19));
+    // console.log(new Date(circleTime * 1000).toISOString().slice(14, 19));
+    // console.log(new Date(crossTime * 1000).toISOString().slice(14, 19));
   };
 
   useEffect(() => {
+    // console.log(circles, crosses);
     if (canvas.current.getContext) {
       setCtx(canvas.current.getContext("2d"));
       setWidth(canvas.current.width);
       setHeight(canvas.current.height);
       setMargin(100);
-      console.log(margin)
 
       setCoordinates({
         1: {
@@ -302,7 +301,6 @@ export default function App() {
           y: margin + height - margin * 2,
         },
       });
-      console.log(coordinates)
 
       const movablesList = {
         1: [2, 4, 5],
@@ -330,29 +328,28 @@ export default function App() {
       setWinningCases(winningCasesList);
 
       if (ctx) {
-        setInterval(function() {
-            console.log(crossTime, circleTime);
-            checkWinner();
-            if(circleTime > 0 || crossTime > 0) {
-              if(!gameRunning) return;
-              updateTime();
-              if(current == 0) {
-                setCircleTime(circleTime - 1);
-              }
-              else if(current == 1) {
-                setCrossTime(crossTime - 1);
-              }
-            }
-          },1000);
-        drawStructure();
+        refreshScreen();
         changeText(current);
+
+        setInterval(function () {
+          checkWinner();
+          if (circleTime > 0 || crossTime > 0) {
+            if (!gameRunning) return;
+            updateTime();
+            if (current === 0) {
+              setCircleTime(circleTime - 1);
+            } else if (current === 1) {
+              setCrossTime(crossTime - 1);
+            }
+          }
+        }, 1000);
+
         canvas.current.addEventListener("click", (evt) => {
-          setGameRunning(true);
           playGame(evt);
         });
       }
     }
-  },[gameRunning]);
+  },[gameRunning, circleTime, crossTime]);
 
   return (
     <div className="App">
@@ -370,7 +367,7 @@ export default function App() {
         <div id="timer"></div>
       </div>
       <div id="floatingButton"></div>
-        <button onClick={() => setGameRunning(true)}>Start Game</button>
+      <button onClick={() => setGameRunning(true)}>Start Game</button>
     </div>
   );
 }
